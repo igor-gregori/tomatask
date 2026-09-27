@@ -1,0 +1,368 @@
+:root {
+  --bg: #fdf6f4;
+  --surface: #ffffff;
+  --text: #1f1a19;
+  --muted: #7a6f6c;
+  --border: #eadfdc;
+  --track: #f1e7e4;
+  --accent: #e5484d;
+  --accent-soft: #fde8e8;
+  --on-accent: #ffffff;
+
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  line-height: 1.5;
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #171312;
+    --surface: #221c1b;
+    --text: #f3ecea;
+    --muted: #a8998f;
+    --border: #3a302e;
+    --track: #342b29;
+    --accent-soft: #3b2021;
+  }
+}
+
+.page[data-mode='short'] {
+  --accent: #12a594;
+  --accent-soft: color-mix(in srgb, #12a594 14%, var(--surface));
+}
+
+.page[data-mode='long'] {
+  --accent: #3e63dd;
+  --accent-soft: color-mix(in srgb, #3e63dd 14%, var(--surface));
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+}
+
+button,
+input {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: default;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.page {
+  min-height: 100vh;
+  background: linear-gradient(180deg, var(--accent-soft) 0%, var(--bg) 360px);
+  transition: background 0.4s;
+}
+
+.app {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 24px 16px 48px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.brand {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 20px;
+}
+
+/* Timer */
+
+.timer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.mode-tabs {
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  background: var(--track);
+  border-radius: 999px;
+  width: 100%;
+}
+
+.mode-tabs button {
+  flex: 1;
+  border: 0;
+  background: transparent;
+  padding: 6px 8px;
+  border-radius: 999px;
+  font-size: 0.875rem;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.mode-tabs button.selected {
+  background: var(--surface);
+  color: var(--text);
+  font-weight: 600;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.12);
+}
+
+.dial {
+  position: relative;
+  width: min(100%, 280px);
+  aspect-ratio: 1;
+}
+
+.dial svg {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.dial circle {
+  fill: none;
+  stroke-width: 10;
+}
+
+.dial-track {
+  stroke: var(--track);
+}
+
+.dial-progress {
+  stroke: var(--accent);
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.3s linear, stroke 0.4s;
+}
+
+.dial-content {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 0 40px;
+  text-align: center;
+}
+
+.time {
+  font-size: clamp(3rem, 16vw, 4rem);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+
+.focus-on {
+  color: var(--muted);
+  font-size: 0.875rem;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.primary {
+  min-width: 140px;
+  padding: 12px 24px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--accent);
+  color: var(--on-accent);
+  font-size: 1.125rem;
+  font-weight: 600;
+  transition: background 0.4s, transform 0.1s;
+}
+
+.primary:active {
+  transform: scale(0.97);
+}
+
+.secondary {
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--muted);
+}
+
+.secondary svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vertical-align: middle;
+}
+
+.secondary:hover {
+  background: var(--track);
+}
+
+.cycles {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+
+/* Tarefas */
+
+.tasks-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.tasks-header h2 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.link {
+  border: 0;
+  background: none;
+  padding: 0;
+  color: var(--muted);
+  font-size: 0.875rem;
+  text-decoration: underline;
+}
+
+.task-form {
+  display: flex;
+  gap: 8px;
+}
+
+.task-form input {
+  flex: 1;
+  min-width: 0;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--bg);
+}
+
+.task-form button {
+  padding: 10px 16px;
+  border: 0;
+  border-radius: 10px;
+  background: var(--accent);
+  color: var(--on-accent);
+  font-weight: 600;
+  transition: background 0.4s;
+}
+
+.task-form button:disabled {
+  opacity: 0.5;
+}
+
+.empty {
+  margin: 16px 0 0;
+  color: var(--muted);
+  font-size: 0.875rem;
+  text-align: center;
+}
+
+.task-list {
+  list-style: none;
+  margin: 12px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.task {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border: 1px solid transparent;
+  border-left: 3px solid transparent;
+  border-radius: 10px;
+  background: var(--bg);
+}
+
+.task.active {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.task input[type='checkbox'] {
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  accent-color: var(--accent);
+  flex-shrink: 0;
+}
+
+.task-title {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  background: none;
+  padding: 4px 0;
+  text-align: left;
+  overflow-wrap: anywhere;
+}
+
+.task.done .task-title {
+  color: var(--muted);
+  text-decoration: line-through;
+}
+
+.task-count {
+  font-size: 0.8125rem;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.icon {
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+  border: 0;
+  border-radius: 6px;
+  background: none;
+  color: var(--muted);
+  font-size: 1.25rem;
+  line-height: 1;
+}
+
+.icon:hover {
+  background: var(--track);
+  color: var(--text);
+}
