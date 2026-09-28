@@ -6,13 +6,15 @@ Pomodoro timer com lista de tarefas.
 
 ## Funcionalidades
 
-- Timer com três modos: Foco (25 min), Pausa curta (5 min) e Pausa longa (15 min, a cada 4 pomodoros)
-- Lista de tarefas: adicione, marque como concluída, exclua e escolha em qual tarefa focar
+- Timer com três modos: Foco, Pausa curta e Pausa longa
+- Durações configuráveis e pausa longa a cada N focos
+- Lista de tarefas: adicione, conclua, exclua e escolha em qual tarefa focar
 - Contagem de pomodoros por tarefa
-- Aviso sonoro ao fim de cada sessão e tempo restante no título da aba
-- Atalho: barra de espaço inicia/pausa
+- Tema claro/escuro, seguindo o sistema por padrão
+- Sons de interface sintetizados com Web Audio (podem ser desligados)
+- Tempo restante no título da aba e atalho de barra de espaço para iniciar/pausar
+- Layout lado a lado no desktop e empilhado no celular
 - Dados salvos no navegador (`localStorage`)
-- Tema claro/escuro automático
 
 ## Desenvolvimento
 

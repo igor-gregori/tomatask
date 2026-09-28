@@ -1,75 +1,68 @@
 import { formatTime } from '../format'
 import { MODE_LABELS, MODES, type Pomodoro } from '../hooks/usePomodoro'
-import type { Task } from '../types'
+import type { Mode, Task } from '../types'
+import { ResetIcon, SkipIcon } from './icons'
 
 type Props = {
   timer: Pomodoro
   activeTask?: Task
+  onToggle: () => void
+  onReset: () => void
+  onSkip: () => void
+  onSwitchMode: (mode: Mode) => void
 }
 
-const RADIUS = 120
-const CIRCUMFERENCE = 2 * Math.PI * RADIUS
+export function Timer({ timer, activeTask, onToggle, onReset, onSkip, onSwitchMode }: Props) {
+  const { mode, remaining, total, running, cycleProgress, longBreakEvery } = timer
+  const idle = remaining >= total
 
-export function Timer({ timer, activeTask }: Props) {
-  const { mode, remaining, total, running, cycles } = timer
-  const progress = 1 - remaining / total
+  const label = mode !== 'focus' ? 'Hora de descansar' : (activeTask?.title ?? 'Sem tarefa selecionada')
 
   return (
     <section className="card timer" aria-label="Timer">
-      <div className="mode-tabs" role="tablist">
+      <div className="modes" role="tablist">
         {MODES.map((m) => (
-          <button
-            key={m}
-            role="tab"
-            aria-selected={m === mode}
-            className={m === mode ? 'selected' : ''}
-            onClick={() => timer.switchMode(m)}
-          >
+          <button key={m} role="tab" aria-selected={m === mode} onClick={() => onSwitchMode(m)}>
             {MODE_LABELS[m]}
           </button>
         ))}
       </div>
 
-      <div className="dial">
-        <svg viewBox="0 0 280 280" aria-hidden="true">
-          <circle className="dial-track" cx="140" cy="140" r={RADIUS} />
+      <div className="clock">
+        <svg className="ring" viewBox="0 0 100 100" aria-hidden="true">
+          <circle className="track" cx="50" cy="50" r="46" />
           <circle
-            className="dial-progress"
-            cx="140"
-            cy="140"
-            r={RADIUS}
-            strokeDasharray={CIRCUMFERENCE}
-            strokeDashoffset={CIRCUMFERENCE * (1 - progress)}
+            className={`prog${idle ? ' idle' : ''}`}
+            cx="50"
+            cy="50"
+            r="46"
+            pathLength={100}
+            strokeDasharray={100}
+            strokeDashoffset={100 * Math.min(1, remaining / total)}
           />
         </svg>
-        <div className="dial-content">
-          <time className="time" aria-live="off">
-            {formatTime(remaining)}
-          </time>
-          <span className="focus-on">
-            {activeTask ? activeTask.title : mode === 'focus' ? 'Sem tarefa selecionada' : 'Hora de descansar'}
+        <div className="clock-inner">
+          <time className="time">{formatTime(remaining)}</time>
+          <span className="label" title={label}>
+            {label}
           </span>
         </div>
       </div>
 
       <div className="controls">
-        <button className="secondary" onClick={timer.reset} aria-label="Reiniciar" title="Reiniciar">
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M3 12a9 9 0 1 0 3-6.7M3 4v5h5" />
-          </svg>
+        <button className="ctrl" onClick={onReset} aria-label="Reiniciar" title="Reiniciar">
+          <ResetIcon />
         </button>
-        <button className="primary" onClick={timer.toggle} title="Espaço">
+        <button className="primary" onClick={onToggle} title="Atalho: barra de espaço">
           {running ? 'Pausar' : 'Iniciar'}
         </button>
-        <button className="secondary" onClick={timer.skip} aria-label="Pular" title="Pular">
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M5 5l10 7-10 7zM19 5v14" />
-          </svg>
+        <button className="ctrl" onClick={onSkip} aria-label="Pular" title="Pular">
+          <SkipIcon />
         </button>
       </div>
 
-      <p className="cycles">
-        {cycles === 0 ? 'Nenhum pomodoro concluído ainda' : `${cycles} pomodoro${cycles > 1 ? 's' : ''} concluído${cycles > 1 ? 's' : ''}`}
+      <p className="cycles-text">
+        {cycleProgress} de {longBreakEvery} até a pausa longa
       </p>
     </section>
   )

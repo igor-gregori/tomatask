@@ -1,8 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { playChime } from '../chime'
+import { playSound } from '../sounds'
+import type { Mode } from '../types'
 import { useLocalStorage } from './useLocalStorage'
-
-export type Mode = 'focus' | 'short' | 'long'
 
 export const MODES: Mode[] = ['focus', 'short', 'long']
 
@@ -12,35 +11,46 @@ export const MODE_LABELS: Record<Mode, string> = {
   long: 'Pausa longa',
 }
 
-// Duração de cada modo, em segundos.
-export const DURATIONS: Record<Mode, number> = {
-  focus: 25 * 60,
-  short: 5 * 60,
-  long: 15 * 60,
+type Options = {
+  /** Duração de cada modo, em minutos. */
+  minutes: Record<Mode, number>
+  longBreakEvery: number
+  onFocusComplete: () => void
 }
-
-const LONG_BREAK_EVERY = 4
 
 function secondsUntil(endAt: number) {
   return Math.max(0, Math.ceil((endAt - Date.now()) / 1000))
 }
 
-export function usePomodoro(onFocusComplete: () => void) {
+export function usePomodoro({ minutes, longBreakEvery, onFocusComplete }: Options) {
   const [mode, setMode] = useState<Mode>('focus')
-  const [remaining, setRemaining] = useState(DURATIONS.focus)
+  const total = minutes[mode] * 60
+  const [remaining, setRemaining] = useState(total)
   // Guardamos o instante de término em vez de decrementar a cada tick,
   // assim o timer não atrasa quando o navegador desacelera abas em segundo plano.
   const [endAt, setEndAt] = useState<number | null>(null)
   const [cycles, setCycles] = useLocalStorage('tomatask:cycles', 0)
+
+  // Mudar a duração do modo atual nas configurações reinicia o timer, se ele estiver parado.
+  const [prevTotal, setPrevTotal] = useState(total)
+  if (total !== prevTotal) {
+    setPrevTotal(total)
+    if (endAt === null) setRemaining(total)
+  }
 
   const onFocusCompleteRef = useRef(onFocusComplete)
   useEffect(() => {
     onFocusCompleteRef.current = onFocusComplete
   }, [onFocusComplete])
 
+  const minutesRef = useRef(minutes)
+  useEffect(() => {
+    minutesRef.current = minutes
+  }, [minutes])
+
   const switchMode = useCallback((next: Mode) => {
     setMode(next)
-    setRemaining(DURATIONS[next])
+    setRemaining(minutesRef.current[next] * 60)
     setEndAt(null)
   }, [])
 
@@ -48,12 +58,12 @@ export function usePomodoro(onFocusComplete: () => void) {
     if (endAt === null) return
 
     const finish = () => {
-      playChime()
+      playSound('done')
       if (mode === 'focus') {
         const completed = cycles + 1
         setCycles(completed)
         onFocusCompleteRef.current()
-        switchMode(completed % LONG_BREAK_EVERY === 0 ? 'long' : 'short')
+        switchMode(completed % longBreakEvery === 0 ? 'long' : 'short')
       } else {
         switchMode('focus')
       }
@@ -70,7 +80,7 @@ export function usePomodoro(onFocusComplete: () => void) {
 
     const id = setInterval(tick, 250)
     return () => clearInterval(id)
-  }, [endAt, mode, cycles, setCycles, switchMode])
+  }, [endAt, mode, cycles, longBreakEvery, setCycles, switchMode])
 
   const running = endAt !== null
 
@@ -87,22 +97,24 @@ export function usePomodoro(onFocusComplete: () => void) {
   const toggle = running ? pause : start
 
   const reset = useCallback(() => {
-    setRemaining(DURATIONS[mode])
-    setEndAt(null)
-  }, [mode])
+    switchMode(mode)
+  }, [mode, switchMode])
 
   const skip = useCallback(() => {
     switchMode(mode === 'focus' ? 'short' : 'focus')
   }, [mode, switchMode])
 
+  // Quantos focos do ciclo atual já foram feitos (na pausa longa, o ciclo está completo).
+  const cycleProgress = mode === 'long' ? longBreakEvery : cycles % longBreakEvery
+
   return {
     mode,
     remaining,
-    total: DURATIONS[mode],
+    total,
     running,
     cycles,
-    start,
-    pause,
+    cycleProgress,
+    longBreakEvery,
     toggle,
     reset,
     skip,
