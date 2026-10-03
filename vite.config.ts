@@ -3,7 +3,7 @@ import { defineConfig } from 'vite'
 
 // https://vite.dev/config/
 export default defineConfig({
-  // GitHub Pages serve o site em https://<usuario>.github.io/tomatask/
-  base: '/tomatask/',
+  // Na Cloudflare o site fica na raiz; o GitHub Pages serve em /tomatask/ (definido no workflow).
+  base: process.env.BASE_PATH ?? '/',
   plugins: [react()],
 })
