@@ -2,7 +2,7 @@
 
 Pomodoro timer com lista de tarefas.
 
-**Acesse:** https://igor-gregori.github.io/tomatask/
+**Acesse:** https://tomatask.igreg.dev
 
 ## Funcionalidades
 
@@ -22,12 +22,18 @@ Requer Node.js 24+.
 
 ```bash
 npm install
-npm run dev      # servidor local em http://localhost:5173/tomatask/
+npm run dev      # servidor local em http://localhost:5173/
 npm run build    # build de produção em dist/
 npm run lint
 ```
 
 ## Deploy
 
-Todo push na branch `main` publica o site no GitHub Pages via GitHub Actions
-(`.github/workflows/deploy.yml`).
+Todo push na branch `main` publica o site na Cloudflare (Workers Static Assets) via
+GitHub Actions (`.github/workflows/deploy.yml`). O repositório precisa dos secrets
+`CLOUDFLARE_API_TOKEN` e `CLOUDFLARE_ACCOUNT_ID`.
+
+Para publicar manualmente: `npx wrangler login` uma vez e depois `npm run deploy`.
+
+O endereço antigo no GitHub Pages (`github-pages/`) só redireciona para o novo,
+levando junto os dados salvos no navegador.

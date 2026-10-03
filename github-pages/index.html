@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex" />
+    <link rel="canonical" href="https://tomatask.igreg.dev/" />
+    <title>tomatask mudou de endereço</title>
+    <script>
+      // Leva os dados salvos neste endereço antigo para o novo, via hash da URL
+      // (o hash não é enviado a nenhum servidor). O app novo importa e limpa o hash.
+      (function () {
+        var target = 'https://tomatask.igreg.dev/'
+        var data = {}
+        try {
+          for (var i = 0; i < localStorage.length; i++) {
+            var key = localStorage.key(i)
+            if (key && key.indexOf('tomatask:') === 0) data[key] = localStorage.getItem(key)
+          }
+        } catch (e) {}
+        if (Object.keys(data).length) target += '#import=' + encodeURIComponent(JSON.stringify(data))
+        location.replace(target)
+      })()
+    </script>
+    <noscript><meta http-equiv="refresh" content="0; url=https://tomatask.igreg.dev/" /></noscript>
+  </head>
+  <body style="font-family: system-ui, sans-serif; padding: 24px">
+    <p>O tomatask agora está em <a href="https://tomatask.igreg.dev/">tomatask.igreg.dev</a>.</p>
+  </body>
+</html>
